@@ -4,9 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Models\Grade;
-
-class GradeController extends Controller
+use App\Models\Classes;
+class ClassesController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,8 +13,8 @@ class GradeController extends Controller
     public function index()
     {
         //
-        return Inertia::render('Grade/index', [
-            'grades' => Grade::all(),
+        return Inertia::render('Classes/index', [
+            'classes' => Classes::all(),
         ]);
     }
 

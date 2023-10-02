@@ -4,6 +4,9 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\GradeController;
+use App\Http\Controllers\ClassesController;
+use App\Http\Controllers\RegisterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,11 +39,35 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // GRADE CONTROLLER
-    Route::resource('grades', GradeController::class);
+    Route::resource('grades', GradeController::class)->names([
+        'index' => 'grades.index',
+        'create' => 'grades.create',
+        'store' => 'grades.store',
+        'show' => 'grades.show',
+        'edit' => 'grades.edit',
+        'update' => 'grades.update',
+        'destroy' => 'grades.destroy',
+    ]);
     // CLASSES CONTROLLER 
-    Route::resource('classes', ClassController::class);
+    Route::resource('classes', ClassesController::class)->names([
+        'index' => 'classes.index',
+        'create' => 'classes.create',
+        'store' => 'classes.store',
+        'show' => 'classes.show',
+        'edit' => 'classes.edit',
+        'update' => 'classes.update',
+        'destroy' => 'classes.destroy',
+    ]);
     // REGISTER CONTROLLER
-    Route::resource('registers', RegisterController::class);
+    Route::resource('registers', RegisterController::class)->names([
+        'index' => 'registers.index',
+        'create' => 'registers.create',
+        'store' => 'registers.store',
+        'show' => 'registers.show',
+        'edit' => 'registers.edit',
+        'update' => 'registers.update',
+        'destroy' => 'registers.destroy',
+    ]);
 });
 
 require __DIR__.'/auth.php';
