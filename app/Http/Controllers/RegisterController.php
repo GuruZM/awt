@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Register;
-
+use App\Models\Grade;
+use App\Models\Classes;
 class RegisterController extends Controller
 {
     /**
@@ -16,6 +17,8 @@ class RegisterController extends Controller
         // return 
         return Inertia::render('Register/index', [
             'registers' => Register::all(),
+            'grades' => Grade::all(),
+            'classes' => Classes::all(),
         ]);
     }
 
@@ -32,9 +35,23 @@ class RegisterController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+         // validate and store the request 
+            $request->validate([
+                'comment' => 'required',
+                'grade_id' => 'required',
+                'classes_id' => 'required'
 
+    ]);
+
+    Register::create([
+        'comment' => $request->comment,
+        'grade_id' => $request->grade_id,
+        'class_id' => $request->classes_id,
+    ]);
+
+    return redirect()->back()->with('success', 'Register created successfully');
+
+}
     /**
      * Display the specified resource.
      */

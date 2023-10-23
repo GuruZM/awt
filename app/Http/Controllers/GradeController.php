@@ -32,7 +32,16 @@ class GradeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // validate and store request 
+        $request->validate([
+            'name' => 'required',
+   
+        ]);
+
+        Grade::create([
+            'name' => $request->name,
+        ]);
+        return redirect()->back()->with('success', 'Grade created successfully');
     }
 
     /**

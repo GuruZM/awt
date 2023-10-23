@@ -8,29 +8,30 @@ import { Card, Typography, Button,
     DialogBody,
     DialogFooter,
     Input, } from "@material-tailwind/react";
-
-const TABLE_HEAD = ["ID", "Name"];
-
-const TABLE_ROWS = [
-    {
-        id: "1",
-      name: "John Michael",
+import { Select, Option } from "@material-tailwind/react";
+import { Link, useForm } from '@inertiajs/react';
+const TABLE_HEAD = ["ID", "Status"];
  
-    },
-    
-    {
-        id: "2",
-      name: "Richard Gran",
-    
-    },
-  ];
-export default function Dashboard({ auth }) {
+export default function Dashboard({ auth , classes,grades,registers}) {
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(!open);
+
+    const { data, setData, post, processing, errors, reset } = useForm({
+      comment: '',
+      grade_id:'',
+      classes_id:'',
+    });
+
+    const handleSubmit = (e) => {
+      e.preventDefault();
+      console.log(data);
+      post(route('registers.store'));
+    };
+
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Dashboard</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Register</h2>}
         >
             <Head title="Dashboard" />
 
@@ -61,8 +62,8 @@ export default function Dashboard({ auth }) {
           </tr>
         </thead>
         <tbody>
-          {TABLE_ROWS.map(({ id,name }, index) => {
-            const isLast = index === TABLE_ROWS.length - 1;
+          {registers.map(({ id,comment }, index) => {
+            const isLast = index === registers.length - 1;
             const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
  
             return (
@@ -82,7 +83,7 @@ export default function Dashboard({ auth }) {
                     color="blue-gray"
                     className="font-normal"
                   >
-                    {name}
+                    {comment}
                   </Typography>
                 </td>
  
@@ -103,12 +104,50 @@ export default function Dashboard({ auth }) {
       >
         <DialogHeader>Fill in form.</DialogHeader>
         <DialogBody divider>
-           <form action="">
-            <Input type="text" color="lightBlue" placeholder="Class Name" />
-           </form>
-        </DialogBody>
-        <DialogFooter>
-          <Button
+        <form onSubmit={handleSubmit}>
+      <Input
+        type="text"
+        name="comment"
+        value={data.comment}
+        onChange={(e) => setData('comment', e.target.value)}
+        label='Comment'
+      />
+        <div className="w-full">
+      <select
+      value={data.grade_id}
+      name='grade_id'
+      onChange={(e) => setData('grade_id', e.target.value)}
+      label="Select Grade">
+        <option value=" "></option>
+          {
+              grades.map(({ id,name }, index) => {
+                  return (
+                      <option key={id} value={id}>{name}</option>
+                  );
+              })
+          }
+         
+ 
+      </select>
+    </div>
+    <div className="w-full">
+      <select 
+      value={data.classes_id}
+      name='classes_id'
+      onChange={(e) => setData('classes_id', e.target.value)}
+      label="Select Class">
+        <option value=""></option>
+        {
+            classes.map(({ id,name }, index) => {
+                return (
+                    <option key={id} value={id}>{name}</option>
+                );
+            })
+        }
+       
+      </select>
+    </div>
+      <Button
             variant="text"
             color="red"
             onClick={handleOpen}
@@ -116,9 +155,13 @@ export default function Dashboard({ auth }) {
           >
             <span>Cancel</span>
           </Button>
-          <Button variant="gradient" color="green" onClick={handleOpen}>
-            <span>Confirm</span>
+          <Button variant="gradient" type='submit' color="green" onClick={handleOpen}>
+            <span>Submit</span>
           </Button>
+    </form>
+        </DialogBody>
+        <DialogFooter>
+           
         </DialogFooter>
       </Dialog>
                     </div>

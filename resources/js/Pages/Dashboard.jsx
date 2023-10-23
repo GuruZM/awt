@@ -1,55 +1,73 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import React,{useState} from 'react';
 import { Head } from '@inertiajs/react';
 import { Select, Option } from "@material-tailwind/react";
 import GaugeChart from 'react-gauge-chart'
 import GaugeComponent from 'react-gauge-component'
-export default function Dashboard({ auth }) {
+import { useEffect } from 'react';
+export default function Dashboard({ auth,classes,register,grades }) {
 
-       // The gauge value
-        const presentValue = 15; // The value representing "present"
-        const absentValue = 50; // The value representing "absent"
-        const sickValue = 10; // 
+  const [selectedGrade, setSelectedGrade] = useState('');
+  const [selectedClass, setSelectedClass] = useState('');
+  const [selectedComment, setSelectedComment] = useState('');
+  const [presentValue, setPresentValue] = useState(0);
+  const [text,setText]  = useState('');
+  const [maxCount, setMaxCount] = useState(0);
 
-        const totalValue = presentValue + absentValue + sickValue;
-        
-        const numberOfValues = 3; // Assuming you have three values
-const average = totalValue / numberOfValues;
+  const [color, setColor] = useState('#5BE12C');
+       
+ 
 
-        const highestPercentage = Math.max(presentValue, absentValue, sickValue);
+  const handleGradeChange = (e) => {
+    setSelectedGrade(e.target.value);
+  };
 
-        const subArcs = [
-            {
-              limit: absentValue,
-              color: '#EA4228',
-              showTick: true,
-              tooltip: {
-                text: 'Absent Pupils:'+ " " +absentValue,
-              },
-            },
-            {
-              limit: sickValue,
-              color: '#F5CD19',
-              showTick: true,
-              tooltip: {
-                text: 'Sick Pupils:'+ " " +sickValue,
-              },
-            },
-            {
-              limit: presentValue,
-              color: '#5BE12C',
-              showTick: true,
-              tooltip: {
-                text: 'Present Pupils:'+ " " +presentValue,
-              },
-            },
-            { color: '#EA4228' }
-          ];
+  const handleClassChange = (e) => {
+    setSelectedClass(e.target.value);
 
+  }
+
+  const handleCommentChange = (e) => {
+    setSelectedComment(e.target.value);
+    const comment = e.target.value;
+    switch (comment) {
+      case "Present":
+        setColor('#5BE12C');
+        setText('Present Pupils:' + " ")
+        break;
+      case "Absent":
+        setColor('#FF0000');
+        setText('Absent Pupils:' + " " )
+        break;
+      case "Sick":
+        setColor('#F5CD19');
+        setText('Sick Pupils:' + " ")
+        break;
+      default:
+        setColor('#AAAAAA');
+    }
+
+  }
+  
+  useEffect(() => {
+    handleChange();
+  }, [selectedGrade, selectedClass, selectedComment]);
+
+
+        const handleChange = () => {
+          const filteredRegisters = register
+            .filter(register => register.grade_id == selectedGrade)
+            .filter(register => register.class_id == selectedClass);
           
-        const sortedarcs = subArcs.sort((a, b) => a.limit - b.limit);
+          const count = filteredRegisters.length;
+          setMaxCount(count);
+        
+          const comment = filteredRegisters.filter(register => register.comment == selectedComment).length;
+          setPresentValue(comment);
+        }; 
     
-// Use the highest percentage as the gauge value
-const gaugeValue = highestPercentage;
+
+ 
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -62,68 +80,99 @@ const gaugeValue = highestPercentage;
                     <div className="bg-white flex flex-col space-x-5 py-10 px-10 max-fit-h overflow-hidden shadow-sm sm:rounded-lg">
                     <div className='flex space-x-10'>
                     <div className="flex-1">
-                            <Select label="Filter By Grade">
-                                <Option>Material Tailwind HTML</Option>
-                                <Option>Material Tailwind React</Option>
-                                <Option>Material Tailwind Vue</Option>
-                                <Option>Material Tailwind Angular</Option>
-                                <Option>Material Tailwind Svelte</Option>
-                            </Select>
+                    <select 
+                    onChange={
+                      ((e) => handleGradeChange(e))
+                    }
+                    className='select mt-3 select-ghost w-full text-black items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-200'
+                    value={selectedGrade}
+                    label="Filter By Grade">
+                      <option value="">- Filter By Grade -</option>
+                        {grades.map((grade) => (
+                          <option key={grade.id} value={grade.id}>{grade.name}</option>
+                        ))}
+                      </select>
                             </div>
 
                             <div className="flex-1">
-                            <Select label="Filter by Class">
-                                <Option>Material Tailwind HTML</Option>
-                                <Option>Material Tailwind React</Option>
-                                <Option>Material Tailwind Vue</Option>
-                                <Option>Material Tailwind Angular</Option>
-                                <Option>Material Tailwind Svelte</Option>
-                            </Select>
+                            <select 
+                            onChange={
+                              ((e) => handleClassChange(e))
+                            }
+                            className='select mt-3 select-ghost w-full text-black items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-200'
+                            value={selectedClass}
+                            label="Filter by Class">
+                           <option value="">- Filter by Class -</option>
+                                {classes?.map((clas) => (
+                                  <option key={clas.id} value={clas.id}>{clas.name}</option>
+                                ))}
+                              </select>
                             </div>
 
                             <div className="flex-1">
-                            <Select label="Filter by Comment">
-                                <Option>Material Tailwind HTML</Option>
-                                <Option>Material Tailwind React</Option>
-                                <Option>Material Tailwind Vue</Option>
-                                <Option>Material Tailwind Angular</Option>
-                                <Option>Material Tailwind Svelte</Option>
-                            </Select>
+                            <select 
+                            onChange={
+                              ((e) => handleCommentChange(e))
+                            }
+                            className='select mt-3 select-ghost w-full text-black items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-200'
+                            value={selectedComment}
+                            label="Filter by Comment">
+                              <option value="">- Filter by comment -</option>
+                              {Array.from(new Set(register.map((register) => register.comment)).values()).map((comment, index) => (
+                                  <option key={index} value={comment}>
+                                    {comment}
+                                  </option>
+                                ))}
+                            </select>
                             </div>
                            
                     </div>
                     <div id="gauge" className='py-20  '>
                     <div>
-        <p>Absent:  <span className='bg-[#EA4228] h-10 w-10 '></span></p>
-        <p>Sick:  <span className='bg-[#EA4228] h-10 w-10 '></span></p>
-        <p>Present:  <span className='bg-[#EA4228] h-10 w-10 '></span></p>
-      </div>
+        
+                   </div>
                     <GaugeComponent
                      type="radial"
-                         arc={{
-                         
-                            width: 0.2,
-                            padding: 0.005,
-                            cornerRadius: 1,
-                         
-                            subArcs: sortedarcs,
-                          }}
+                      
+                     arc={{
+                     
+                        width: 0.2,
+                        padding: 0.005,
+                        cornerRadius: 1,
+                     
+                        // subArcs: sortedarcs,
+                        subArcs: [
+                          
+                          {
+                            limit: presentValue,
+                            color: color,                  
+                            showTick: true,
+                            tooltip: {
+                              text: text + presentValue,
+                            },
+                          },
+                          
+                            { color: '#AAAAAA' }
+                          
+                        ],
+                      }}
                           pointer={{
                             elastic: true,
                             animationDelay: 0
                           }}
                           labels={{
-                            valueLabel: { formatTextValue: value => value + '%' },
+                         
                             tickLabels: {
                               type: 'outer',
-                              valueConfig: { formatTextValue: value => value + '%', fontSize: 10 },
+                      
                               ticks: [
                                
                               ],
                             }
                           }}
                           textColor="black"
-                          maxValue={highestPercentage}
+                          needleColor="F5CD19"  
+                          maxValue={maxCount != 0 ?maxCount:100}
                           value={presentValue}
                     />
             

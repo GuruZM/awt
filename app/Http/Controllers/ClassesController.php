@@ -14,7 +14,7 @@ class ClassesController extends Controller
     {
         //
         return Inertia::render('Classes/index', [
-            'classes' => Classes::all(),
+            'classe' => Classes::all(),
         ]);
     }
 
@@ -31,7 +31,17 @@ class ClassesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // validate and store the request 
+        $request->validate([
+            'classname' => 'required',
+
+        ]);
+        $classes = new Classes();
+        $classes->name = $request->classname;
+        $classes->save();
+
+     
+        return redirect()->back()->with('success', 'Class created successfully');
     }
 
     /**

@@ -7,7 +7,9 @@ use Inertia\Inertia;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\RegisterController;
-
+use App\Models\Grade;
+use App\Models\Classes;
+use App\Models\Register;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -29,7 +31,15 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    // get all 
+    $grades = Grade::all();
+    $classes = Classes::all();
+    $register = Register::all();
+    return Inertia::render('Dashboard',[
+        'grades'=>$grades,
+        'classes'=>$classes,
+        'register'=>$register
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 
