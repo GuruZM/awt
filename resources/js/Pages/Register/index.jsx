@@ -116,6 +116,7 @@ export default function Dashboard({ auth , classes,grades,registers}) {
       <select
       value={data.grade_id}
       name='grade_id'
+      className='select mt-3 select-ghost w-full text-black items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-200'
       onChange={(e) => setData('grade_id', e.target.value)}
       label="Select Grade">
         <option value=" "></option>
@@ -134,6 +135,7 @@ export default function Dashboard({ auth , classes,grades,registers}) {
       <select 
       value={data.classes_id}
       name='classes_id'
+      className='select mt-3 select-ghost w-full text-black items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-200'
       onChange={(e) => setData('classes_id', e.target.value)}
       label="Select Class">
         <option value=""></option>
